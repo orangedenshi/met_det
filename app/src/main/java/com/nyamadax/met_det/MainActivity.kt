@@ -751,6 +751,7 @@ class MainActivity : AppCompatActivity() , OnClickListener {
                 it.setMessage(getString(R.string.err_no_higher))
                 it.show()
             }
+
             return null
         }
 
