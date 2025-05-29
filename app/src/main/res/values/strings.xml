@@ -6,6 +6,7 @@
     <string name="label_holdtime" >排出保持時間</string>
     <string name="label_annotation" >　　※10000=永久保持</string>
     <string name="label_nonetime" >不検出時間</string>
+    <string name="label_delaytime" >検出遅延時間</string>
 
     <string name="label_det_setten">検出接点</string>
     <string name="label_err_setten">エラー接点</string>
@@ -43,6 +44,10 @@
     <string name="err_noneTime"  >不検出　エラー"</string>
     <string name="err_no_lower"  >0[s]以上の値にしてください"</string>
     <string name="err_no_higher" >1000[s]以下の値にしてください"</string>
+
+    <string name="err_delayTime" >検出遅延時間　エラー</string>
+    <string name="err_de_lower"  >0[ms]以上の値にしてください"</string>
+    <string name="err_de_higher" >1000[ms]以下の値にしてください</string>
 
     <string name="choose_sensor" >センサーを選択</string>
 

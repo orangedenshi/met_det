@@ -39,6 +39,7 @@ import androidx.core.view.WindowInsetsCompat
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
+import java.util.Timer
 import java.util.UUID
 import kotlin.concurrent.withLock
 import kotlin.math.roundToInt
@@ -67,6 +68,9 @@ class MainActivity : AppCompatActivity() , OnClickListener {
     }
     private val nonetime_tv by lazy {
         findViewById<TextView>(R.id.editText4)
+    }
+    private val delaytime_tv by lazy {
+        findViewById<TextView>(R.id.editText5)
     }
     private val rms_tv by lazy {
         findViewById<TextView>(R.id.textView14)
@@ -479,8 +483,9 @@ class MainActivity : AppCompatActivity() , OnClickListener {
             try {
                 name_tv.text = data.name
                 threshold_tv.text = ((data.threshold * 10.0).roundToInt() / 10.0).toString()
-                keeptime_tv.text = data.keepTime.toString()
-                nonetime_tv.text = data.noneTime.toString()
+                keeptime_tv.text  = data.keepTime.toString()
+                nonetime_tv.text  = data.noneTime.toString()
+                delaytime_tv.text = data.delayTime.toString()
             }catch(e:Exception){
                 parameterSet = 2
                 Log.d("dataToView",e.toString())
@@ -526,6 +531,7 @@ class MainActivity : AppCompatActivity() , OnClickListener {
         val rmsAveAll  : Double?,
         val isHoloding : Int,
         val setten     : Int,
+        val delayTime  : Int,
     ) {
         companion object {
             /**
@@ -557,6 +563,7 @@ class MainActivity : AppCompatActivity() , OnClickListener {
                 val rmsAveAllI     = try{ ByteBuffer.wrap(data, 80, 4).order(ByteOrder.LITTLE_ENDIAN).int}catch (e:Exception){null}
                 val isHoloding     = try{ ByteBuffer.wrap(data, 84, 4).order(ByteOrder.LITTLE_ENDIAN).int}catch (e:Exception){0   }
                 val setten         = try{ ByteBuffer.wrap(data, 88, 4).order(ByteOrder.LITTLE_ENDIAN).int}catch (e:Exception){0   }
+                val delayTime      = try{ ByteBuffer.wrap(data, 92, 4).order(ByteOrder.LITTLE_ENDIAN).int}catch (e:Exception){0   }
 
 
 //                 val rms        = rmsBytes      .order(ByteOrder.LITTLE_ENDIAN).int.toDouble()*5.0*2.3*1000/(8192.0*2.0)
@@ -618,6 +625,7 @@ class MainActivity : AppCompatActivity() , OnClickListener {
                     rmsAveAll ,
                     isHoloding,
                     setten,
+                    delayTime,
                 )
             }
         }
@@ -758,6 +766,42 @@ class MainActivity : AppCompatActivity() , OnClickListener {
         return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array()
     }
 
+    private fun checkDelayTime(): ByteArray? {
+        val dlogBuilder = AlertDialog.Builder(this)
+            .setTitle(R.string.err_delayTime)
+            .setPositiveButton("OK", null)
+        var value: Int?
+        try {
+            value = delaytime_tv.text.toString().toInt()
+        } catch (e: Exception) {
+            value = null
+        }
+
+        if(value ==null) {
+            dlogBuilder.create().also { it ->
+                it.setMessage(getString(R.string.err_exchange))
+                it.show()
+            }
+            return null
+        }
+        if(value<0    ){
+            dlogBuilder.create().also { it ->
+                it.setMessage(getString(R.string.err_de_lower))
+                it.show()
+            }
+            return null
+        }
+        if(value>10000){
+            dlogBuilder.create().also { it ->
+                it.setMessage(getString(R.string.err_de_higher))
+                it.show()
+            }
+            return null
+        }
+
+        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array()
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onClick(v: View?) {
         if(v==null)return
@@ -806,9 +850,15 @@ class MainActivity : AppCompatActivity() , OnClickListener {
                         return
                     }
 
+                    val e = checkDelayTime()
+                    if(e==null) {
+                        Log.d("onClick","delaytime error")
+                        return
+                    }
+
                     // val e = name_tv     .text.toString().toByteArray(Charsets.UTF_8)
                     // val f = z + a + b + c + d + e
-                    val f = z + a + b + c + d
+                    val f = z + a + b + c + d + e
                     oThresholdI = 0
                     oKeepTime   = 0
                     oNoneTime   = 0
@@ -878,6 +928,7 @@ class MainActivity : AppCompatActivity() , OnClickListener {
                     name_tv       .text = ""
                     threshold_tv  .text = ""
                     keeptime_tv   .text = ""
+                    delaytime_tv  .text = ""
                     nonetime_tv   .text = ""
                     rms_tv        .text = "0"
                     rmsave_tv     .text = "0"
