@@ -27,6 +27,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
+import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -122,6 +123,10 @@ class MainActivity : AppCompatActivity() , OnClickListener {
     }
     private val err_setten by lazy {
         findViewById<TextView>(R.id.textView38)
+    }
+
+    private val delaytime_row by lazy {
+        findViewById<TableRow>(R.id.tableRow1)
     }
 
 
@@ -467,6 +472,12 @@ class MainActivity : AppCompatActivity() , OnClickListener {
         }else{
             version_text.text = (String.format("%02d",data.version/256) + "." + String.format("%02d",data.version%256))
             hold_annotation.text = if(data.version>2) getString(R.string.label_annotation) else ""
+        }
+
+        if(data.version==null || data.version<=4){
+            delaytime_row.visibility = View.INVISIBLE
+        }else{
+            delaytime_row.visibility = View.VISIBLE
         }
 
         if (oName != data.name ||
