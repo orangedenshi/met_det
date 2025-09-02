@@ -173,13 +173,16 @@ class MainActivity : AppCompatActivity() , OnClickListener {
         findViewById<Button>(R.id.button5).also { it.setOnClickListener(this) }
         button_connect.also { it.setOnClickListener(this) }
 
-        val packageName = packageManager.getPackageInfo(packageName,0).versionName
+        val pName = packageManager.getPackageInfo(packageName,0).versionName
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+        // // val versionName = packageInfo.versionName
+        val packageVersionCode = packageInfo.longVersionCode // API 28以上
 
         findViewById<TextView>(R.id.textView32).setOnClickListener{
-            AlertDialog.Builder(this)
+            AlertDialog.Builder(this )
                 .setTitle("Metal Detector Controller")
                 .setPositiveButton("OK",null)
-                .setMessage("Version: $packageName")
+                .setMessage("Version: $pName \nBuild Version $packageVersionCode")
                 .create()
                 .show()
         }
