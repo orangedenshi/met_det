@@ -473,7 +473,8 @@ class MainActivity : AppCompatActivity() , OnClickListener {
         if(data.version==null) {
             version_text.text = "-"
         }else{
-            version_text.text = (String.format("%02d",data.version/256) + "." + String.format("%02d",data.version%256))
+            // version_text.text = (String.format("%02d",data.version/256) + "." + String.format("%02d",data.version%256))
+            version_text.text = (String.format("%d",data.version/256) + "." + String.format("%d",data.version%256))
             hold_annotation.text = if(data.version>2) getString(R.string.label_annotation) else ""
         }
 
